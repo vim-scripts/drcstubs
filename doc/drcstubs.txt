@@ -1,0 +1,176 @@
+*drcstubs.txt*	DrChip's C Stubs						Apr 14, 2005
+
+Author:  Charles E. Campbell, Jr.  <NdrOchip@ScampbellPfamily.AbizM>
+	  (remove NOSPAM from Campbell's email first)
+
+==============================================================================
+1. Contents					*drcstubs* *drcstubs-contents*
+
+   1. Contents.............................: |drcstubs-contents|
+   2. Usage................................: |drcstubs-usage|
+	  C Language Support...................: |drcstubs-c|
+	  LaTeX Language Support...............: |drcstubs-tex|
+	  Vim Language Support.................: |drcstubs-vim|
+   3. Installation.........................: |drcstubs-install|
+   4. History..............................: |drcstubs-history|
+
+
+==============================================================================
+2. Usage						*drcstubs-usage*
+
+   All of the DrCStubs ftplugin scripts provide maps which work during insert
+   mode.  One may use either the shorthand or longhand maps to invoke the
+   corresponding imap.  They are invoked whenever a string is followed by
+   a backquote.
+
+   One major advantage of these imaps is that they, in turn, take advantage of
+   the user's cindent settings and/or indentation scripts.  Thus the result
+   should be as if the user had typed them him/herself.
+
+   These imaps will not operate if "set paste:" is on.
+
+   In the maps below:
+
+	An "X" is where the cursor will end up after the map is invoked.
+	An "Y" is where the cursor will end up after an <esc> is pressed.
+	A  "|" means a newline.
+
+   Another form of help is available by typing >
+
+   	:Drcstubs
+<
+
+   ------------------
+   C LANGUAGE SUPPORT									*drcstubs-c*
+   ------------------
+>
+		Shorthand    Longhand     Expands
+		Map          Map          To
+<		---------    --------     -------
+		i`           if`          if(X) {Y}
+		e`           els[e]`      else {X}
+		ei`          eli[f]`      else if(X) {Y}
+		f`           for\=`       for(X;;) {Y}
+		w`           wh[ile]`     while(X) {Y}
+		s`           sw[itch]`    switch(X) {Y}
+		c`           ca[se]`      case X: Y break;
+		d`           defa[ult]`   default: Y break;
+		`            do`          do {X} while(Y);
+		E`           Ed[bg]`      Edbg((\"func(X)\"Y));
+		R`           Rd[bg]`      Rdbg((\"funcX\"Y));
+		D`           Dp[rintf]`   Dprintf((1,\"X\"Y));
+		             in[clude]`   #include X
+		             de[fine]`    #define X
+		             #`           #ifdef X ... #endif
+
+   -------------
+   LATEX SUPPORT				*drcstubs-tex* *drcstubs-latex*
+   -------------
+>
+		  Environments And Abbreviations
+		Shorthand    Longhand     Expands
+		Map          Map          To
+<		---------    --------     -------
+		align`                    \begin{align}|X|\end{align}
+		arr`         array`       \left[\begin{array}{ccc}|X|\end{array}\right]
+		ctr`         center`      \begin{center}|X|\end{center}
+		desc`        description` \begin{description}|\item[X]|\end{sdescription}
+		enum`        enumerate`   \begin{enumerate}|\item X|\end{enumerate}
+		eps`         epsf`        \begin{figure}[H]\centering\framebox{\epsfbox{X.eps}}\end{figure}
+		eqn`         equation`    \begin{equation}|X|\end{equation}
+		eqna`        eqnarray`    \begin{eqnarray}|X&=& Y \\|\end{eqnarray}
+		fig`         figure`      \begin{figure}[H]\centering \framebox{X} \caption{CAPTION HERE} \end{figure}
+		flalign`                  \begin{flalign}|X|\end{flalign}
+		frac`                     \frac{X}{Y}
+		gat`         gather`      \begin{gather}|X|\end{gather}
+		i`                        \item X
+		i`                        \item[X] Y        (if vim v7, and in a description block)
+		item`        itemize`     \begin{itemize}|\item X|\end{itemize}
+		mat`         matrix`      \left[|\begin{array}{cc}| X &   & \\|&   & |\end{array}|\right]
+		mini`        minipage`    \begin{minipage}[H]{4in}|X|\end{minipage}
+		multc`       multicol`    \multicolumn{1}{X|c|}{MultiColumn} 
+		multl`       multline`    \begin{multline}|X|\end{multline}
+		split`                    \begin{equation}\begin{split}|X|\end{split}\end{equation}
+		tab`         tabular`     (too long for here)
+		v`                        \verb`X`
+		verb`        verbatim`    \begin{verbatim}|X|\end{verbatim}
+>
+			Script Style Support
+		Shorthand    Longhand     Expands
+		Map          Map          To
+<		---------    --------     -------
+		bf`                       \textbf{}
+		it`                       \textit{}
+		rm`                       \textrm{}
+		sc`                       \textsc{}
+		sf`                       \textsf{}
+		sl`                       \textsl{}
+		tt`                       \texttt{}
+		mtt`                      \mathtt{}
+		mrm`                      \mathrm{}
+		mbf`                      \mathbf{}
+		msf`                      \mathsf{}
+		mtt`                      \mathtt{}
+		mit`                      \mathit{}
+		mcal`                     \mathcal{}
+>
+					Greek Letters:
+		Shorthand    Expands		Shorthand    Expands
+		Map          To     		Map          To
+<		---------    -------		---------    -------
+		a`           \alpha        v             \nu
+		b`           \beta         f             \xi
+		g`           \gamma        p             \pi
+		d`           \delta        vp            \varpi
+		e`           \epsilon      r             \rho
+		ve`          \varepsilon   vr            \varrho
+		z`           \zeta         s             \sigma
+		n`           \eta          v             \varsigma
+		t`           \theta        t             \tau
+		vt`          \vartheta     u             \upsilon
+		io`          \iota         h             \phi
+		k`           \kappa        vh            \varphi
+		l`           \lambda       x             \chi
+		m`           \mu           q             \psi
+		w`           \omega
+
+
+   ----------
+   SH SUPPORT												*drcstubs-sh*
+   ----------
+>
+		Shorthand    Longhand     Expands
+		Map          Map          To
+<		---------    --------     -------
+		ca[se]`      c`           case X in|Y|esac
+		fo[r]`       f`           for X in Y ; do|Z|done
+		if`          i`           if [[ X ]]; then|Y|fi
+		eli[f]`      ei`          elif [[ X ]]; then|Y
+		els[e]`      e`           else|X
+		fu[nction]`               function X|{|Y|}
+		wh[ile]`     w`           while [[ X ]]; do|Y|done
+
+
+   -----------
+   VIM SUPPORT												*drcstubs-vim*
+   -----------
+>
+		Shorthand    Longhand     Expands
+		Map          Map          To
+<		---------    --------     -------
+		i            if           if X|endif
+		e            els[e]       else|X
+		ei           eli[f]       elseif X
+		             fu[nction]   fun! X(Y)|endfun
+		w            wh[ile]      while X|endwhile
+		F            Df[unc]      call Dfunc("func(X)")|Y
+		R            Dr[et]       call Dret("return func X")
+		D            De[echo]     call Decho("X")|Y
+
+==============================================================================
+3. Installation						*drcstubs-install*
+
+==============================================================================
+4. History						*drcstubs-history*
+
+vim: ts=4

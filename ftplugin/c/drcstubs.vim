@@ -2,9 +2,10 @@
 "   isk is set to include # so as not to break #if
 "
 "  Author:  Charles E. Campbell, Jr. (PhD)
-"  Date:    Apr 27, 2005
-"  Version: 1
+"  Date:    Jan 14, 2010
+"  Version: 3
 "
+" ---------------------------------------------------------------------
 "  Usage:  (requires 6.0 or later) {{{1
 "
 "   These maps all work during insert mode while editing a C
@@ -20,6 +21,7 @@
 "   i`         if`
 "   e`         els[e]`
 "   ei`        eli[f]`
+"   er`
 "   f`         for`
 "   w`         wh[ile]`
 "   s`         sw[itch]`
@@ -32,9 +34,11 @@
 "   R`         Rd[bg]`    (see http://mysite.verizon.net/astronaut/dbg)
 "   D`         Dp[rintf]` (see http://mysite.verizon.net/astronaut/dbg)
 "   #`                    #ifdef ... #endif
+"   ?`         ? "" : "null "
 "
 "   Caveat: these maps will not work if "set paste" is on
 "
+" ---------------------------------------------------------------------
 " Installation: {{{2
 "
 " This copy of DrC's C-Stubs is filetype plugin for vim 6.0: put it in
@@ -46,20 +50,22 @@
 "  nor anything else in all creation, will be able to separate us from the
 "  love of God that is in Christ Jesus our Lord."  Rom 8:38
 " =======================================================================
-
 " Load Once: {{{1
 if exists("b:loaded_drcstubs")
   finish
 endif
-let b:loaded_drcstubs= "v1"
+let b:loaded_drcstubs= "v3"
+let b:undo_ftplugin  ="let &isk=@,48-57,_"
 
 " ---------------------------------------------------------------------
 " Special Syntax: {{{1
 syn keyword cTodo COMBAK
 syn match cTodo "^[- ]*COMBAK[- ]*$" 
-set isk+=#
+setlocal isk+=#
+setlocal isk-=:
+"DechoTabOn
 
-" ---------------------------------------------------------------------
+" =====================================================================
 " Public Interface: {{{1
 
 " backquote calls DrChipCStubs function
@@ -71,18 +77,55 @@ inoremap <Plug>UseDrCStubs <Esc>:call <SID>DrChipCStubs()<CR>a
 " provide help for drcstubs
 com! Drcstubs call s:CMapHlp()
 
-" ---------------------------------------------------------------------
+if has("gui") && has("gui_running") && !exists("s:did_drcstubs_menu")
+ let s:did_drcstubs_menu= 1
+ menu DrChip.DrCStubs.Help	:Drcstubs<cr>
+ imenu DrChip.DrCStubs.if	if`
+ imenu DrChip.DrCStubs.else	e`
+ imenu DrChip.DrCStubs.elseif	ei`
+ imenu DrChip.DrCStubs.for	f`
+ imenu DrChip.DrCStubs.while	w`
+ imenu DrChip.DrCStubs.switch	s`
+ imenu DrChip.DrCStubs.case	c`
+ imenu DrChip.DrCStubs.default	d`
+ imenu DrChip.DrCStubs.do	do`
+ imenu DrChip.DrCStubs.include	in`
+ imenu DrChip.DrCStubs.define	de`
+ imenu DrChip.DrCStubs.Edbg	E`
+ imenu DrChip.DrCStubs.Rdbg	R`
+ imenu DrChip.DrCStubs.Dprintf	D`
+ imenu DrChip.DrCStubs.ifdef	#`
+ imenu DrChip.DrCStubs.?\.\.	?`
+endif
 
-" DrChipCStubs: this function changes the backquote into {{{1
+" =====================================================================
+" Functions: {{{1
+
+" ---------------------------------------------------------------------
+" DrChipCStubs: this function changes the backquote into {{{2
 "               text based on what the preceding word was
-fun! <SID>DrChipCStubs()
+fun! s:DrChipCStubs()
 "  call Dfunc("DrChipCStubs()")
   let vekeep= &ve
   set ve=
  
-  let wrd=expand("<cWORD>")
- 
-  if     wrd =~ '\<if\>'
+  let wrd= expand("<cWORD>")
+  let chr= substitute(getline("."),'^.*\%'.col('.').'c\(.\).*$','\1','')
+  if strlen(chr) > 1
+   let chr   = substitute(wrd,'^.*\(.\)$','\1','')
+  endif
+  let inline= (virtcol("$") - virtcol(".")) > 1
+"  call Decho("wrd<".wrd."> chr<".chr."> inline=".inline)
+
+  if chr =~ '?'
+"   call Decho('chr=~?')
+   if inline
+    exe 'norm! xi? "" : "null ",'
+   else
+    exe 'norm! xa? "" : "null ",'
+   endif
+
+  elseif     wrd =~ '\<if\>'
 "   call Decho('\<if')
    exe "norm! bdWaif() {\<CR>}\<Esc>k$F("
    ino <esc> <esc>f{:iun <c-v><esc><cr>o
@@ -151,17 +194,21 @@ fun! <SID>DrChipCStubs()
 "   call Decho('\<d\>')
  
   elseif wrd =~ '\<do\>'
-   exe "norm! bdWado {\<CR>} while();\<Esc>O \<c-h>\<Esc>"
+   exe "norm! bdWado {\<CR>} while();\<Esc>O \<Esc>$"
    ino <esc> <esc>:iun <c-v><esc><cr>?\<do {<cr>f{%f(a
 "   call Decho('\<do')
+
+  elseif wrd =~ 'er\%[r]\|xm\%[err]'
+   exe 'norm! bdWaif(xmerror)(*xmerror)(XTDIO_WARNING,"(X)\n");'."\<esc>FXcw"
+   ino <esc> <esc>:iun <c-v><esc><cr>f)a 
  
   elseif wrd =~ 'Ed\%[bg]\>'
    exe "norm! bdWaEdbg((\"\<Esc>ma[[?)\<CR>%BdwP`apa()\"));\<Esc>F("
-   ino <esc> <esc>:iun <c-v><esc><cr>/"));$<cr>l
+   ino <esc> <esc>:iun <c-v><esc><cr>/"));$<cr>li
 "   call Decho('\<Ed')
   elseif wrd =~ '\<E\>'
    exe "norm! xaEdbg((\"\<Esc>ma[[?)\<CR>%BdwP`apa()\"));\<Esc>F("
-   ino <esc> <esc>:iun <c-v><esc><cr>/"));$<cr>l
+   ino <esc> <esc>:iun <c-v><esc><cr>/"));$<cr>li
 "   call Decho('\<E')
  
   elseif wrd =~ 'Rd\%[bg]\>'
@@ -215,7 +262,7 @@ fun! s:DrCCFor(cnt)
 endfun
 
 " ---------------------------------------------------------------------
-" CMapHlp: sets up a special window holding a list of my C-related {{{1
+" CMapHlp: sets up a special window holding a list of my C-related {{{2
 " maps, imaps, etc
 fun! s:CMapHlp()
 "  call Dfunc("CMapHlp()")
@@ -267,7 +314,7 @@ fun! s:CMapHlp()
   syn match CmapCursor	'\<[XYZW]\>'	contained
   syn match CmapNewline '|'				contained
   syn case match
-  syn keyword CmapKeys	contained if else for while switch case default do Edbg Rdbg Dprintf #include #define #ifdef #endif
+  syn keyword CmapKeys	contained if else for while switch case default do Edbg Rdbg Dprintf #include #define #ifdef #endif DDmatout DDvecout DCmatout DCvecout
 
   if !exists("b:did_drcstubs_help")
    command -nargs=+ HiLink hi def link <args>
@@ -290,5 +337,6 @@ fun! s:CMapHlp()
 "  call Dret("CMapHlp")
 endfun
 
-" ---------------------------------------------------------------------
+" =====================================================================
+" Modelines: {{{1
 "  vim: fdm=marker

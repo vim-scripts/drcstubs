@@ -1,8 +1,8 @@
 " drcstubs.vim: Dr Chip's Sh Stubs  (a plugin)
 "
 "  Author:  Charles E. Campbell, Jr. (PhD)
-"  Date:    Apr 27, 2005
-"  Version: 1
+"  Date:    Nov 04, 2009
+"  Version: 3
 "
 "  Usage:  (requires 6.0 or later)
 "
@@ -20,6 +20,7 @@
 "   i`         if`
 "   e`         els[e]`
 "   ei`        eli[f]`
+"   fo`        for`
 "   fu`        fu[nction]`
 "   w`         wh[ile]`
 "
@@ -47,12 +48,12 @@
 if exists("b:loaded_drcstubs")
   finish
 endif
-let b:loaded_drcstubs= 1
+let b:loaded_drcstubs= "v3"
 
 " ---------------------------------------------------------------------
 " Special Syntax: {{{1
-syn keyword vimTodo COMBAK
-syn match vimTodo "^[- ]*COMBAK[- ]*$" 
+syn keyword	vimTodo COMBAK
+syn match	vimTodo "^[- ]*COMBAK[- ]*$" 
 
 " ---------------------------------------------------------------------
 " Public Interface: {{{1
@@ -62,13 +63,12 @@ if !hasmapto('<Plug>UseDrCStubs')
  imap <buffer> <unique> ` <Plug>UseDrCShStubs
 endif
 inoremap <Plug>UseDrCShStubs <Esc>:call <SID>DrCShStubs()<CR>a
-inoremap <silent> (	(<c-o>:call <sid>DrCShParenChk()<cr>
+inoremap <buffer> <silent> (	(<c-o>:call <sid>DrCShParenChk()<cr>
 
 " provide help for drcstubs
 com! Drcstubs call s:ShMapHlp()
 
 " ---------------------------------------------------------------------
-
 " DrCShStubs: this function changes the backquote into {{{1
 "             text based on what the preceding word was
 fun! <SID>DrCShStubs()
@@ -219,6 +219,37 @@ fun! s:ShMapHlp()
   setlocal fdm=marker
   norm! zM
 "  call Dret("ShMapHlp")
+endfun
+
+" ---------------------------------------------------------------------
+"  s:ShMenuToggle: toggle display of menu
+augroup DrcShStubsEvents
+ au!
+ au BufEnter	*	call s:ShMenuToggle(1)
+ au BufLeave	*	call s:ShMenuToggle(0)
+augroup END
+fun! s:ShMenuToggle(menustate)
+  if &ft == "sh" && has("gui") && has("gui_running") && has("menu")
+"   call Dfunc("s:ShMenuToggle(menustate=".a:menustate.") ft<".&ft.">")
+   if a:menustate
+    imenu DrChip.ShStubs.Case<tab>ca`	ca`
+    imenu DrChip.ShStubs.For<tab>fo`	fo`
+    imenu DrChip.ShStubs.If<tab>if`	if`
+    imenu DrChip.ShStubs.Else<tab>els`	els`
+    imenu DrChip.ShStubs.ElseIf<tab>eli`	eli`
+    imenu DrChip.ShStubs.Function<tab>fun`	fun`
+    imenu DrChip.ShStubs.While<tab>wh`	wh`
+   else
+    silent! iunmenu DrChip.ShStubs.Case
+    silent! iunmenu DrChip.ShStubs.For
+    silent! iunmenu DrChip.ShStubs.If
+    silent! iunmenu DrChip.ShStubs.Else
+    silent! iunmenu DrChip.ShStubs.ElseIf
+    silent! iunmenu DrChip.ShStubs.Function
+    silent! iunmenu DrChip.ShStubs.While
+   endif
+"   call Dret("s:ShMenuToggle")
+  endif
 endfun
 
 " ---------------------------------------------------------------------

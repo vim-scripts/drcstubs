@@ -1,7 +1,11 @@
-*drcstubs.txt*	DrChip's C Stubs						Apr 14, 2005
+*drcstubs.txt*	DrChip's C Stubs						Apr 01, 2010
 
 Author:  Charles E. Campbell, Jr.  <NdrOchip@ScampbellPfamily.AbizM>
 	  (remove NOSPAM from Campbell's email first)
+Copyright: (c) 2004-2010 by Charles E. Campbell, Jr.	*drcstubs-copyright*
+           The VIM LICENSE applies to drcstubs.vim and drcstubs.txt
+           (see |copyright|) except use "drcstubs" instead of "Vim"
+	   No warranty, express or implied.  Use At-Your-Own-Risk.
 
 ==============================================================================
 1. Contents					*drcstubs* *drcstubs-contents*
@@ -46,10 +50,11 @@ Author:  Charles E. Campbell, Jr.  <NdrOchip@ScampbellPfamily.AbizM>
 >
 		Shorthand    Longhand     Expands
 		Map          Map          To
-<		---------    --------     -------
-		i`           if`          if(X) {Y}
+		---------    --------     -------
+<		i`           if`          if(X) {Y}
 		e`           els[e]`      else {X}
 		ei`          eli[f]`      else if(X) {Y}
+		er`                       if(xmerror)(*xmerror)(XTDIO_WARNING,"(X) Y\n");
 		f`           for\=`       for(X;;) {Y}
 		w`           wh[ile]`     while(X) {Y}
 		s`           sw[itch]`    switch(X) {Y}
@@ -88,7 +93,7 @@ Author:  Charles E. Campbell, Jr.  <NdrOchip@ScampbellPfamily.AbizM>
 		item`        itemize`     \begin{itemize}|\item X|\end{itemize}
 		mat`         matrix`      \left[|\begin{array}{cc}| X &   & \\|&   & |\end{array}|\right]
 		mini`        minipage`    \begin{minipage}[H]{4in}|X|\end{minipage}
-		multc`       multicol`    \multicolumn{1}{X|c|}{MultiColumn} 
+		multc`       multicol`    \multicolumn{1}{X|c|}{MultiColumn}
 		multl`       multline`    \begin{multline}|X|\end{multline}
 		split`                    \begin{equation}\begin{split}|X|\end{split}\end{equation}
 		tab`         tabular`     (too long for here)
@@ -170,7 +175,42 @@ Author:  Charles E. Campbell, Jr.  <NdrOchip@ScampbellPfamily.AbizM>
 ==============================================================================
 3. Installation						*drcstubs-install*
 
+	a) place drcstubs.tar.gz in your
+		Unix: $HOME/.vim
+		Windows: ..wherever..\vimfiles
+	   directory
+
+	b) gunzip drcstubs.tar.gz
+
+	c) tar -oxvf drcstubs.tar
+
+	d) Unix:
+		vim
+		:helptags ~/.vim/doc
+	   Windows:
+		vim
+		:helptags ..wherever../vimfiles/doc
+	
+	e) Have a line in your <.vimrc> file such as:
+		filetype plugin indent on
+
+	The next time you bring up vim with one of the supported filetypes
+	(C, C++, LaTeX, Vim, sh-ksh-bash) the Drcstubs maps will be available
+	for use.  They work best if you've set up cindent (see |'cinoptions'|);
+	the one I use follows, but may well not be the style to which you are
+	accustomed:
+
+	set cino=>s,e0,n0,f0,{0,}4,^-1s,:0,=s,g0,h1s,p2,t0,+2,(2,)20,*30
+
+	You'll also want automatic indentation.  Vim comes with several such
+	scripts; the ones I've customized are available at
+
+	http://vim.sourceforge.net/scripts/script.php?script_id=1270
+
 ==============================================================================
 4. History						*drcstubs-history*
+
+	3	Jun 29, 2009	: put silent! on iunmenu calls to prevent unwanted
+						  error messages when inappropriately invoked.
 
 vim: ts=4
